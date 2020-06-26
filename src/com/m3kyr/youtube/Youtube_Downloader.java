@@ -113,22 +113,40 @@ public class Youtube_Downloader {
 
     private class downloadButtonActionListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
-            if(isValidURL() && urlField.getText().contains("www.youtube")) {
-                int selectedOption = getSelectedOption();
-                String[] command;
-                switch (selectedOption) {
+            if(isValidURL()) {
+                switch (getSelectedOption()) {
                     case 0:
-                        command = new String[]{"/bin/zsh","-c","youtube-dl -i -x --audio-format 'mp3' --audio-quality 0 -o  '" + pathField.getText() + "/%(playlist)s/%(title)s.%(ext)s' '" + urlField.getText() + "'"};
-                        download(command);
+                        download(new String[]
+                                {"/bin/zsh",
+                                "-c",
+                                "youtube-dl -x --audio-format 'mp3' --audio-quality 0 -o  '"
+                                        + pathField.getText()
+                                        + "/%(title)s.%(ext)s' '"
+                                        + urlField.getText()
+                                        + "'"});
                         break;
                     case 1:
-                        command = new String[]{"/bin/zsh","-c","youtube-dl -x --audio-format 'mp3' --audio-quality 0 -o  '" + pathField.getText() + "/%(title)s.%(ext)s' '" + urlField.getText() + "'"};
-                        download(command);
+                        download(new String[]
+                                {"/bin/zsh",
+                                "-c",
+                                "youtube-dl -i -x --audio-format 'mp3' --audio-quality 0 -o  '"
+                                        + pathField.getText()
+                                        + "/%(playlist)s/%(title)s.%(ext)s' '"
+                                        + urlField.getText()
+                                        + "'"});
                         break;
                     case 2:
-                        command = new String[]{"/bin/zsh","youtube-dl --recode-video mp4 -o '" + pathField.getText() + "/%(title)s.%(ext)s' '" + urlField.getText() + "'"};
-                        download(command);
+                        download(new String[]
+                                {"/bin/zsh",
+                                "-c",
+                                "youtube-dl --recode-video mp4 -o '"
+                                        + pathField.getText()
+                                        + "/%(title)s.%(ext)s' '"
+                                        + urlField.getText()
+                                        + "'"});
                         break;
+                    default:
+                        throw new IllegalStateException("Unexpected value: " + getSelectedOption());
                 }
             }
             else {
@@ -203,7 +221,7 @@ public class Youtube_Downloader {
     private boolean isValidURL() {
         try {
             URL url = new URL(urlField.getText());
-            return true;
+            return urlField.getText().contains("www.youtube");
         }
         catch (MalformedURLException e) {
             return false;
