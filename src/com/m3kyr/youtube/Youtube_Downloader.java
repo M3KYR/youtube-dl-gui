@@ -115,15 +115,19 @@ public class Youtube_Downloader {
         public void actionPerformed(ActionEvent e) {
             if(isValidURL() && urlField.getText().contains("www.youtube")) {
                 int selectedOption = getSelectedOption();
+                String[] command;
                 switch (selectedOption) {
                     case 0:
-                        downloadMusic();
+                        command = new String[]{"/bin/zsh","-c","youtube-dl -i -x --audio-format 'mp3' --audio-quality 0 -o  '" + pathField.getText() + "/%(playlist)s/%(title)s.%(ext)s' '" + urlField.getText() + "'"};
+                        download(command);
                         break;
                     case 1:
-                        downloadPlaylist();
+                        command = new String[]{"/bin/zsh","-c","youtube-dl -x --audio-format 'mp3' --audio-quality 0 -o  '" + pathField.getText() + "/%(title)s.%(ext)s' '" + urlField.getText() + "'"};
+                        download(command);
                         break;
                     case 2:
-                        downloadVideo();
+                        command = new String[]{"/bin/zsh","youtube-dl --recode-video mp4 -o '" + pathField.getText() + "/%(title)s.%(ext)s' '" + urlField.getText() + "'"};
+                        download(command);
                         break;
                 }
             }
@@ -190,32 +194,11 @@ public class Youtube_Downloader {
         }
     }
 
-    private void downloadMusic() {
-        String[] command = {"/bin/zsh","-c","youtube-dl -x --audio-format 'mp3' --audio-quality 0 -o  '" + pathField.getText() + "/%(title)s.%(ext)s' '" + urlField.getText() + "'"};
-        download(command);
-    }
-
-    private void downloadVideo() {
-        String[] command = {"/bin/zsh","youtube-dl --recode-video mp4 -o '" + pathField.getText() + "/%(title)s.%(ext)s' '" + urlField.getText() + "'"};
-        download(command);
-    }
-
-    private void downloadPlaylist() {
-        String[] command = {"/bin/zsh","-c","youtube-dl -i -x --audio-format 'mp3' --audio-quality 0 -o  '" + pathField.getText() + "/%(playlist)s/%(title)s.%(ext)s' '" + urlField.getText() + "'"};
-        download(command);
-    }
-
     private boolean fileTypeSelected() {
-        if(audioRadioButton.isSelected() || videoRadioButton.isSelected() || playlistRadioButton.isSelected()) {
-            return true;
-        }
-        return false;
+        return audioRadioButton.isSelected() || videoRadioButton.isSelected() || playlistRadioButton.isSelected();
     }
     private boolean filePathSelected() {
-        if(fileSave.getSelectedFile() != null) {
-            return true;
-        }
-        return false;
+        return fileSave.getSelectedFile() != null;
     }
     private boolean isValidURL() {
         try {
@@ -231,23 +214,20 @@ public class Youtube_Downloader {
         try {
             ProcessBuilder pb = new ProcessBuilder(command);
             Process p = pb.start();
-            final Thread ioThread = new Thread() {
-                @Override
-                public void run() {
-                    try {
-                        final BufferedReader reader = new BufferedReader(
-                                new InputStreamReader(p.getInputStream()));
-                        String line = null;
-                        while ((line = reader.readLine()) != null) {
-                            textArea.append(line);
-                            textArea.append(System.getProperty("line.separator"));
-                        }
-                        reader.close();
-                    } catch (final Exception e) {
-                        e.printStackTrace();
+            final Thread ioThread = new Thread(() -> {
+                try {
+                    final BufferedReader reader = new BufferedReader(
+                            new InputStreamReader(p.getInputStream()));
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        textArea.append(line);
+                        textArea.append(System.getProperty("line.separator"));
                     }
+                    reader.close();
+                } catch (final Exception e) {
+                    e.printStackTrace();
                 }
-            };
+            });
             ioThread.start();
         }
         catch (Exception e) {
