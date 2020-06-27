@@ -8,20 +8,20 @@ import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-public class Youtube_Downloader {
+public class YoutubeDownloader {
 
     private JFrame frame;
+    private JTextField urlField = new JTextField("URL del video...", 20);
+    private JTextField pathField = new JTextField("Ruta del video...", 20);
+    private JFileChooser fileSave = new JFileChooser();
     private JRadioButton audioRadioButton;
     private JRadioButton playlistRadioButton;
     private JRadioButton videoRadioButton;
-    private JTextField pathField = new JTextField("Ruta del video...", 20);
-    private JTextField urlField = new JTextField("URL del video...", 20);
     private JButton downloadButton;
-    private JTextArea textArea;
-    private JFileChooser fileSave = new JFileChooser();
+    private JTextArea consoleOutput;
 
     public static void main(String[] args) {
-        new Youtube_Downloader().go();
+        new YoutubeDownloader().go();
     }
 
     private void go() {
@@ -229,8 +229,8 @@ public class Youtube_Downloader {
                             new InputStreamReader(p.getInputStream()));
                     String line;
                     while ((line = reader.readLine()) != null) {
-                        textArea.append(line);
-                        textArea.append(System.getProperty("line.separator"));
+                        consoleOutput.append(line);
+                        consoleOutput.append(System.getProperty("line.separator"));
                     }
                     reader.close();
                 } catch (final Exception e) {
@@ -252,17 +252,17 @@ public class Youtube_Downloader {
     }
 
     private JScrollPane setupScrollPane() {
-        setupTextArea();
-        JScrollPane scrollPane = new JScrollPane(textArea);
+        setupConsoleOutput();
+        JScrollPane scrollPane = new JScrollPane(consoleOutput);
         scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
         scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         return scrollPane;
     }
 
-    private void setupTextArea() {
-        textArea = new JTextArea(12, 40);
-        textArea.setLineWrap(true);
-        textArea.setEditable(false);
+    private void setupConsoleOutput() {
+        consoleOutput = new JTextArea(12, 40);
+        consoleOutput.setLineWrap(true);
+        consoleOutput.setEditable(false);
     }
 
 }
